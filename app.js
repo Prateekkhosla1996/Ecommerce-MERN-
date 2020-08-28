@@ -3,6 +3,8 @@ const mongoose= require('mongoose');
 const morgan=require('morgan');
 const bodyparser=require('body-parser')
 const cookieparser=require('cookie-parser')
+const expressvalidator = require('express-validator')
+const authRouts=require('./routes/auth')
 const userRouts=require('./routes/user')
 require('dotenv').config()
 
@@ -18,7 +20,9 @@ mongoose.connect(process.env.DATABASE,{
 app.use(morgan('dev'));
 app.use(bodyparser.json());
 app.use(cookieparser())
+app.use(expressvalidator());
 //routes
+app.use('/api',authRouts);
 app.use('/api',userRouts);
 const port=process.env.PORT||8000;
 app.listen(port,(err)=>{
