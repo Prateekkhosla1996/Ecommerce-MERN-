@@ -1,8 +1,9 @@
-let uuidv1 = require('uuidv1')
-console.log(uuidv1())
+const User=require('../models/user')
+
+// console.log(uuidv1())
 const jwt=require('jsonwebtoken');// to generate sign token
 const expressJwt=require('express-jwt')// auth check
-const User=require('../models/user')
+let uuidv1 = require('uuidv1')
 const {errorHandler}=require('../helpers/dbErrorhandler')
 exports.signup=(req,res)=>{
     console.log('req.body',req.body)
@@ -38,7 +39,7 @@ exports.signin=(req,res)=>{
             })
         }
         //generate a token with user id
-        const token= jwt.sign({_id:user._id},process.env.JWT_SECRET)
+        const token= jwt.sign({_id:user._id},'secret')
         //persist the token as 't' in cookie
         res.cookie('t',{expire:new Date()+9999})
         //return resonse with user and token to frontend client
@@ -57,7 +58,25 @@ exports.signout=(req,res)=>{
 //     userProperty: "auth",
 //   });
 exports.requireSignin=expressJwt({
-    secret:'process.env.JWT_SECRET',
+    secret:'secret',
     algorithms: ["HS256"],
-    userProperty:"auth"
+    userProperty:'auth'
 });
+
+exports.isAuth=(req,res,next)=>{
+    let user = req.profile && req.auth && req.profile._id== req.auth._id
+    if(!user){
+        return res.status(403).json({
+            error:'acess denied'
+        })
+    }
+    next();
+}
+exports.isAdmin=(req,res,next)=>{
+    if(req.profile.role===0){
+        return res.status(403).json({
+            error:'Admin resource! Access denied'
+        })
+    }
+    next();
+}
