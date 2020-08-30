@@ -71,3 +71,43 @@ exports.remove=(req,res)=>{
         });
     })
 }
+
+exports.update=(req,res)=>{
+    const form = new formidable.IncomingForm();
+    form.keepExtensions=true
+    form.parse(req,(err,fields,files)=>{
+        if(err){
+            return res.status(400).json({
+                error:"image could not be uploaded"
+            })
+        }
+        //check for all fields
+        const{name,description,price,category,quantity,shipping}=fields
+        if(!name||!description||!price||!category||!quantity||!shipping){
+            return res.status(400).json({
+                error:"all fields are required"
+            })
+        }
+        let product= req.product
+        product=lodash.extend(product,fields)
+        if(files.photo){
+            console.log(files.photo)
+            if(files.photo.size>2000000){
+                return res.status(400).json({
+                    error:'sile size should be of maximium 2mb'
+                })
+            }
+            product.photo.data = fs.readFileSync(files.photo.path)
+            product.photo.contentType=files.photo.type
+        }
+        product.save((err,data)=>{
+         if(err){
+             return res.status(400).json({
+                 error:errorHandler(err)
+             })
+         }
+         res.json(data)
+     })
+    })
+ }
+ 
