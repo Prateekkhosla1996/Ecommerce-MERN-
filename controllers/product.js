@@ -57,3 +57,17 @@ exports.read=(req,res)=>{
     req.product.photo=undefined
     return res.json(req.product)
 }
+
+exports.remove=(req,res)=>{
+    let product =req.product
+    product.remove((err,deletedproduct)=>{
+        if(err){
+            res.json({
+                error:errorHandler(err)
+            })
+        }
+        res.json({
+            message:"product is deleted"
+        });
+    })
+}
