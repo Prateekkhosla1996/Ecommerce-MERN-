@@ -120,7 +120,7 @@ exports.list=(req,res)=>{
     // return res.json(req.products)
     let order=req.query.order ? req.query.order : 'asc';
     let sortby=req.query.sortBy ? req.query.sortBy : '_id';
-    let limit=req.query.limit ? req.query.limit : 6;
+    let limit=req.query.limit ? parseInt(req.query.limit) : 6;
 
     Product.find()
     .select("-photo")
@@ -133,8 +133,27 @@ exports.list=(req,res)=>{
                 error:'product not found'
             })
         }
-        res.send(data);
+        res.json(data);
     })
 
 }
 
+/**
+ * it will find the products based on request product category
+ * other products that has the same category, will be returned
+ */
+
+exports.listRelated= (req,res)=>{
+    let limit=req.query.limit ? parseInt(req.query.limit) : 6;
+    Product.find({_id: {$ne:req.product},category:req.product.category})
+    .limit(limit)
+    .populate('category','_id name')
+    .exec((err,data)=>{
+        if(err){
+            return res.status(400).json({
+                error:"Product not found"
+            })
+        }
+        res.json(data);
+    })
+}
