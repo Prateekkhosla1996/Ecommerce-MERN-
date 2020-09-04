@@ -3,6 +3,7 @@ const mongoose= require('mongoose');
 const morgan=require('morgan');
 const bodyparser=require('body-parser')
 const cookieparser=require('cookie-parser')
+const cors=require('cors')
 const expressvalidator = require('express-validator')
 const authRouts=require('./routes/auth')
 const userRouts=require('./routes/user')
@@ -23,6 +24,7 @@ app.use(morgan('dev'));
 app.use(bodyparser.json());
 app.use(cookieparser())
 app.use(expressvalidator());
+app.use(cors());
 //routes
 app.use('/api',authRouts);
 app.use('/api',userRouts);
