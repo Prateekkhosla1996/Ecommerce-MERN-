@@ -24,6 +24,7 @@ app.use(morgan('dev'));
 app.use(bodyparser.json());
 app.use(cookieparser())
 app.use(expressvalidator());
+//chors
 app.use(cors());
 //routes
 app.use('/api',authRouts);
